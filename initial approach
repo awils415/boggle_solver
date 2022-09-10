@@ -1,0 +1,68 @@
+exports.findAllSolutions = function(grid, dictionary) {
+
+  var n = dictionary.length;
+  var M = grid[0].length;
+  var N = grid.length;
+
+  let solutions = [];
+
+  //function to check if str is present in dictionary
+  function valid_word(str)
+  {
+    //search grid linearly
+    for (var i = 0; i < n; i++) if (str == dictionary[i]) return true;
+    return false;
+  }
+
+  //recursive function to add words to solutions
+  function in_grid(grid, visited, i, j, str)
+  {
+    //mark current cell as visited and append current character to str
+    visited[i][j] = true;
+    str = str + grid[i][j];
+
+    //add str to solutions if in dictionary
+    if (valid_word(str.toLowerCase())) 
+      solutions.push(str.toLowerCase());
+
+    //traverse 8 adjacent cells (e, s, w, n, ne, se, nw, sw) of grid[i,j]
+    for (var row = i - 1; row <= i + 1 && row < M; row++)
+      for (var col = j - 1; col <= j + 1 && col < N; col++)
+        if (row >= 0 && col >= 0 && !visited[row][col])
+          in_grid(grid, visited, row, col, str);
+
+    //delete current character from string and mark visited of current cell as false
+    str = "" + str[str.length - 1];
+    visited[i][j] = false;
+  }
+
+  //prints all words present in dictionary.
+  function find_word(grid)
+  {
+    //mark all characters as not visited
+    var visited = Array.from(Array(M), () => new Array(N).fill(0));
+
+    //initialize current string
+    var str = "";
+
+    //consider every character and look for all words starting with character
+    for (var i = 0; i < M; i++)
+      for (var j = 0; j < N; j++) in_grid(grid, visited, i, j, str);
+  }
+
+  //driver code
+  console.log("Found words:");
+  find_word(grid);
+  return solutions;
+}  
+
+var grid = [['T', 'W', 'Y', 'R'],
+            ['E', 'N', 'P', 'H'],
+            ['G', 'Z', 'Qu', 'R'],
+            ['St', 'N', 'T', 'A']];
+
+var dictionary = ['art', 'ego', 'gent', 'get', 'net', 'new', 'newt', 'prat',
+                  'pry', 'qua', 'quart', 'quartz', 'rat', 'tar', 'tarp',
+                  'ten', 'went', 'wet', 'arty', 'egg', 'not', 'quar'];
+
+console.log(exports.findAllSolutions(grid, dictionary));
